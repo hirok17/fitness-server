@@ -28,15 +28,25 @@ async function run() {
 
     const featureCollection = client.db("fitness").collection("features");
     const galleryCollection = client.db("fitness").collection("gallery");
+    const subscribeCollection = client.db("fitness").collection("subscribe");
+
+
+    app.post('/subscribe', async(req, res)=>{
+      const subscribe =req.body;
+      const result =await subscribeCollection.insertOne(subscribe);
+      res.send(result);
+
+    })
 
     app.get('/features', async(req, res)=>{
         const result =await featureCollection.find().toArray();
         res.send(result);
-    })
+    });
 
-    app.get('/gallery', async(req, res)=>{
-        const result =await galleryCollection.find().toArray();
-        res.send(result);
+      app.get('/gallery', async(req, res)=>{
+          const limit = parseInt(req.query.limit) || 10; 
+         const result =await galleryCollection.find().limit(limit).toArray();
+          res.send(result);     
     })
 
 
