@@ -29,6 +29,9 @@ async function run() {
     const featureCollection = client.db("fitness").collection("features");
     const galleryCollection = client.db("fitness").collection("gallery");
     const subscribeCollection = client.db("fitness").collection("subscribe");
+    const signuserCollection = client.db("fitness").collection("loginuser");
+    const trainerCollection = client.db("fitness").collection("trainer");
+   
 
 
     app.post('/subscribe', async(req, res)=>{
@@ -36,7 +39,16 @@ async function run() {
       const result =await subscribeCollection.insertOne(subscribe);
       res.send(result);
 
-    })
+    });
+
+    app.post('/users', async(req, res)=>{
+      const user =req.body;
+      const result =await signuserCollection.insertOne(user);
+      res.send(result);
+
+    });
+
+
 
     app.get('/features', async(req, res)=>{
         const result =await featureCollection.find().toArray();
@@ -47,11 +59,15 @@ async function run() {
           const limit = parseInt(req.query.limit) || 10; 
          const result =await galleryCollection.find().limit(limit).toArray();
           res.send(result);     
-    })
-
+    });
+    
+    app.get('/trainer', async(req, res)=>{
+      const result =await trainerCollection.find().toArray();
+      res.send(result);
+  });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
