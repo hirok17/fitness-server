@@ -31,9 +31,20 @@ async function run() {
     const subscribeCollection = client.db("fitness").collection("subscribe");
     const signuserCollection = client.db("fitness").collection("loginuser");
     const trainerCollection = client.db("fitness").collection("trainer");
+    const blogsCollection = client.db("fitness").collection("blogs");
    
 
-
+    app.get('/blogs', async(req, res)=>{
+      const query =req.query;
+      const page =query.page;
+      const pageNumber =parseInt(page);
+      const perPage=3;
+      const skip =pageNumber * perPage;
+      const posts =blogsCollection.find().skip(skip).limit(perPage);
+      const postCount =await blogsCollection.countDocuments();
+      const result =await posts.toArray();
+      res.send({result, postCount});
+    })
     app.post('/subscribe', async(req, res)=>{
       const subscribe =req.body;
       const result =await subscribeCollection.insertOne(subscribe);
@@ -48,7 +59,7 @@ async function run() {
     app.post('/users', async(req, res)=>{
       const user =req.body;
       const result =await signuserCollection.insertOne(user);
-      res.send(result);
+       res.send(result);
 
     });
     app.get('/users', async(req, res)=>{
@@ -75,9 +86,14 @@ async function run() {
     });
 
       app.get('/gallery', async(req, res)=>{
-          const limit = parseInt(req.query.limit) || 10; 
-         const result =await galleryCollection.find().limit(limit).toArray();
-          res.send(result);     
+        const query =req.query;
+       const page =query.page;
+      const perPage=8;
+      const posts =galleryCollection.find().limit(perPage);
+      const postCount =await galleryCollection.countDocuments();
+      const result =await posts.toArray();
+      res.send({result, postCount});
+           
     });
     
     app.get('/trainer', async(req, res)=>{
